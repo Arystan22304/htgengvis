@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Нефтеперерабатывающий кликер</title>
+    <style>
+
+header {
+    background: linear-gradient(135deg, #1a73e8, #0049b7);
+    color: white;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+header .logo {
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+header nav ul {
+    list-style: none;
+    display: flex;
+}
+
+header nav ul li {
+    margin-left: 20px;
+}
+
+header nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    transition: color 0.3s ease;
+}
+
+header nav ul li a:hover {
+    color: #ffdb4d;
+}
+
+
+.contacts {
+    position: relative;
+}
+
+.contacts .contact-info {
+    display: none; /* Скрыть текст по умолчанию */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #f1f1f1;
+    color: #0049b7;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.contacts:hover .contact-info {
+    display: block; /* Показать текст при наведении */
+}
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .resource-display, .buttons, .products {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            border-radius: 8px;
+        }
+        .buttons button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }ф
+        .buttons button:hover {
+            opacity: 0.9;
+        }
+        .mine-btn {
+            background-color: #ffd700;
+        }
+        .process-btn {
+            background-color: #add8e6;
+        }
+        .sell-oil-btn {
+            background-color: #ff6347; /* Красный цвет */
+        }
+        .products table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .products th, .products td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .products th {
+            background-color: #f2f2f2;
+        }
+
+        .balance {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50; /* Зеленый цвет для выделения */
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* Тень для выделения */
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            width: 100%;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .sell-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .sell-buttons button {
+            background: linear-gradient(145deg, #ffa07a, #ff6347);
+            padding: 12px 30px;
+            font-size: 18px;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .sell-buttons button:hover {
+            background: linear-gradient(145deg, #ff6347, #ffa07a);
+            transform: scale(1.05);
+            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .oil-drop, .money-drop, .smoke-drop {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #000;
+            border-radius: 50%;
+            animation: drop 1s ease-in-out infinite;
+            opacity: 0.7;
+        }
+
+        .money-drop {
+            background-color: green; /* Цвет для денег */
+        }
+
+        .smoke-drop {
+            background-color: #808080; /* Серый цвет для дыма */
+            animation: smoke 2s ease-in-out infinite;
+        }
+
+        @keyframes drop {
+            0% {
+                top: -20px;
+                opacity: 1;
+            }
+            100% {
+                top: 100%;
+                opacity: 0;
+            }
+        }
+
+        @keyframes smoke {
+            0% {
+                top: 100%;
+                opacity: 0.5;
+                transform: scale(1);
+            }
+            100% {
+                top: -20px;
+                opacity: 0;
+                transform: scale(1.5);
+            }
+        }
+
+        .level-up-btn {
+            margin-top: 10px;
+            background: linear-gradient(145deg, #32cd32, #228b22); /* Зеленый градиент */
+            padding: 14px 30px;
+            font-size: 18px;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .level-up-btn:hover {
+            background: linear-gradient(145deg, #228b22, #32cd32);
+            transform: scale(1.05);
+            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .mine-btn .crane {
+            margin-left: 5px;
+            font-size: 18px;
+        }
+
+        .level-up-btn span {
+            font-size: 16px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+
+<header>
+    <div class="logo">Нефтяная Академия</div>
+    <nav>
+        <ul>
+            <li><a href="index.html">Главная</a></li>
+            <li><a href="musgaym.html">Симулятор</a></li>
+            <li><a href="index.html">Лекция</a></li>
+            <li><a href="sdrab.html">Карта</a></li>
+            
+            <li class="contacts">
+                <a href="#contact">Контакты</a>
+                <div class="contact-info">8707339993</div> <!-- Текст, который будет показываться -->
+            </li>
+        </ul>
+    </nav>
+</header>
+
+
+<body>
+    <div class="container">
+        <div class="resource-display">
+            <h2>Текущий запас нефти: <span id="oilStock">0</span> литров</h2>
+        </div>
+        <div class="buttons">
+            <button class="mine-btn" id="mineBtn">⛽ Добыть нефть
+                <span id="craneCount">🛠️</span>
+            </button>
+            <button class="process-btn" id="processBtn">🏭 Переработать нефть(требует 5$)</button>
+            <button class="sell-oil-btn" id="sellOilBtn">💰 Продать нефть</button>
+        </div>
+        <div class="level-up">
+            <button class="level-up-btn" id="levelUpBtn">
+                💡 Улучшить добычу нефти
+                <span id="upgradeCost"> (Цена: $50)</span>
+            </button>
+            <div class="balance">
+                <p id="balance">Баланс: $0</p>
+            </div>
+        </div>
+        <div class="products">
+            <h3>Склад переработанных продуктов:</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Продукт</th>
+                        <th>Запас</th>
+                        <th>Цена за единицу</th>
+                        <th>Стоимость</th>
+                    </tr>
+                </thead>
+                <tbody id="productTable">
+                    <!-- Продукты добавляются динамически -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="sell-buttons">
+            <button onclick="sellResource('gasoline')">Продать бензин</button>
+            <button onclick="sellResource('diesel')">Продать дизель</button>
+            <button onclick="sellResource('kerosene')">Продать керосин</button>
+            <button onclick="sellResource('lpg')">Продать ЛПГ</button>
+            <button onclick="sellResource('bitumen')">Продать битум</button>
+            <button onclick="sellResource('oils')">Продать масла</button>
+            <button onclick="sellResource('sulfur')">Продать серу</button>
+        </div>
+        <div class="resource-display">
+            <h4>Подсказки:</h4>
+            <ul>
+                <li>Добывая нефть ты можешь продать её сырой или же переработать в продукты которые тоже можно продать.</li>
+                <li>На заработанные деньги ты можешь улучшать точку добычи нефти. Попробуй достигнуть максимального уровня добычи чтобы разблокировать концовку.</li>
+                <li>Хоть переработка и стоит 5$, но переработанные продукты сумарно дадут больше прибыли чем продажа сырой нефти.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Начальные данные
+        let oilLimit = 385;
+        let oilStock = 0;
+        let balance = 0; // Баланс игрока
+        let oilPrice = 0.5; // Цена за литр сырой нефти
+        let products = {
+            gasoline: { stock: 0, price: 1.2 },
+            diesel: { stock: 0, price: 1.0 },
+            kerosene: { stock: 0, price: 0.8 },
+            lpg: { stock: 0, price: 0.6 },
+            bitumen: { stock: 0, price: 0.5 },
+            oils: { stock: 0, price: 1.5 },
+            sulfur: { stock: 0, price: 0.3 }
+        };
+
+        const processCoefficients = {
+            gasoline: 0.45,
+            diesel: 0.25,
+            kerosene: 0.10,
+            lpg: 0.05,
+            bitumen: 0.05,
+            oils: 0.05,
+            sulfur: 0.05
+        };
+
+        let miningLevel = 1;
+        let miningCost = 50; // Начальная стоимость улучшения
+
+        function mineOil() {
+            if(miningLevel >= 5){
+                oilLimit = oilLimit - miningLevel;
+                if(oilLimit<=0){
+                    alert("В источниках закончилась нефть!, строить экономику только на нефти - плохая идея...");
+                }
+            }
+            const oilToMine = miningLevel;
+            oilStock += oilToMine;
+            updateOilStockDisplay();
+            createOilDrop();
+        }
+
+        function processOil() {
+            if (oilStock > 0 && balance > 5) {
+                balance -= 5;
+                const oilToProcess = oilStock;
+                oilStock = 0;
+
+                // Перерабатываем нефть в другие продукты
+                products.gasoline.stock += oilToProcess * processCoefficients.gasoline;
+                products.diesel.stock += oilToProcess * processCoefficients.diesel;
+                products.kerosene.stock += oilToProcess * processCoefficients.kerosene;
+                products.lpg.stock += oilToProcess * processCoefficients.lpg;
+                products.bitumen.stock += oilToProcess * processCoefficients.bitumen;
+                products.oils.stock += oilToProcess * processCoefficients.oils;
+                products.sulfur.stock += oilToProcess * processCoefficients.sulfur;
+
+                updateProductStockDisplay();
+                updateBalance();
+                updateOilStockDisplay();
+                createMultipleSmoke();
+            } else {
+                alert("Недостаточно нефти или денег для переработки!");
+            }
+        }
+
+        function sellOil() {
+            if (oilStock > 0) {
+                const revenue = oilStock * oilPrice;
+                balance += revenue;
+                oilStock = 0;
+                updateOilStockDisplay();
+                updateBalance();
+                createMultipleMoneyDrops();
+            } else {
+                alert("Нет нефти для продажи!");
+            }
+        }
+
+        function sellResource(resource) {
+            if (products[resource].stock > 0) {
+                const revenue = products[resource].stock * products[resource].price;
+                balance += revenue;
+                products[resource].stock = 0;
+                updateProductStockDisplay();
+                updateBalance();
+                createMultipleMoneyDrops();
+            } else {
+                alert(`Нет ${resource} для продажи!`);
+            }
+        }
+
+        function updateOilStockDisplay() {
+            document.getElementById("oilStock").textContent = oilStock;
+        }
+
+        function updateProductStockDisplay() {
+            const table = document.getElementById("productTable");
+            table.innerHTML = '';
+            for (const [product, data] of Object.entries(products)) {
+                const row = `
+                    <tr>
+                        <td>${product}</td>
+                        <td>${data.stock.toFixed(2)}</td>
+                        <td>$${data.price.toFixed(2)}</td>
+                        <td>$${(data.stock * data.price).toFixed(2)}</td>
+                    </tr>
+                `;
+                table.innerHTML += row;
+            }
+        }
+
+        function updateBalance() {
+            document.getElementById("balance").textContent = `Баланс: $${balance.toFixed(2)}`;
+        }
+
+        function createOilDrop() {
+            const drop = document.createElement("div");
+            drop.classList.add("oil-drop");
+
+            const leftPosition = Math.random() * 100;
+            drop.style.left = `${leftPosition}%`;
+
+            document.body.appendChild(drop);
+            setTimeout(() => drop.remove(), 1000);
+        }
+
+        function createMultipleSmoke() {
+            for (let i = 0; i < 15; i++) {
+                setTimeout(createSmoke, i * 100);
+            }
+        }
+
+        function createSmoke() {
+            const smoke = document.createElement("div");
+            smoke.classList.add("smoke-drop");
+
+            const leftPosition = Math.random() * 100;
+            smoke.style.left = `${leftPosition}%`;
+
+            document.body.appendChild(smoke);
+            setTimeout(() => smoke.remove(), 2000);
+        }
+
+        function createMultipleMoneyDrops() {
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    const moneyDrop = document.createElement("div");
+                    moneyDrop.classList.add("money-drop");
+
+                    const leftPosition = Math.random() * 100;
+                    moneyDrop.style.left = `${leftPosition}%`;
+
+                    document.body.appendChild(moneyDrop);
+                    setTimeout(() => moneyDrop.remove(), 1000);
+                }, i * 100);
+            }
+        }
+
+        document.getElementById("mineBtn").addEventListener("click", mineOil);
+        document.getElementById("processBtn").addEventListener("click", processOil);
+        document.getElementById("sellOilBtn").addEventListener("click", sellOil);
+
+        document.getElementById("levelUpBtn").addEventListener("click", () => {
+            if (balance >= miningCost) {
+                balance -= miningCost;
+                miningLevel++;
+                miningCost = Math.round(miningCost * 1.7); // Цена улучшения растет быстрее
+                document.getElementById("craneCount").textContent = "🛠️".repeat(miningLevel); // Увеличиваем количество кранов
+                document.getElementById("upgradeCost").textContent = `(Цена: $${miningCost})`; // Обновляем текст с ценой улучшения
+
+                updateBalance();
+            } else {
+                alert("Недостаточно средств для улучшения!");
+            }
+        });
+
+        updateOilStockDisplay();
+        updateProductStockDisplay();
+        updateBalance();
+    </script>
+</body>
+</html>

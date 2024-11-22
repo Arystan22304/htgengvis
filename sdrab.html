@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive World Map - Oil Resources</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+
+
+
+
+  <style>
+    #map {
+      height: 100vh;
+    }
+    body {
+      margin: 0;
+    }
+    .info.legend {
+      background: white;
+      padding: 10px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    .info.legend i {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      margin-right: 5px;
+    }
+
+
+    header {
+    background: linear-gradient(135deg, #1a73e8, #0049b7);
+    color: white;
+    font-family: 'Roboto', Arial, sans-serif;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+header .logo {
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+header nav ul {
+    list-style: none;
+    display: flex;
+}
+
+header nav ul li {
+    margin-left: 20px;
+}
+
+header nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    transition: color 0.3s ease;
+}
+
+header nav ul li a:hover {
+    color: #ffdb4d;
+}
+
+
+.contacts {
+    position: relative;
+}
+
+.contacts .contact-info {
+    display: none; /* Скрыть текст по умолчанию */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #f1f1f1;
+    color: #0049b7;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.contacts:hover .contact-info {
+    display: block; /* Показать текст при наведении */
+}
+
+
+
+  </style>
+</head>
+
+<header>
+  <div class="logo">Нефтяная Академия</div>
+  <nav>
+      <ul>
+          <li><a href="index.html">Главная</a></li>
+          <li><a href="musgaym.html">Симулятор</a></li>
+          <li><a href="index.html">Лекция</a></li>
+          <li><a href="sdrab.html">Карта</a></li>
+          
+          <li class="contacts">
+              <a href="#contact">Контакты</a>
+              <div class="contact-info">8707339993</div> <!-- Текст, который будет показываться -->
+          </li>
+      </ul>
+  </nav>
+</header>
+
+
+<body>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+  <script>
+    // Predefined oil information for countries
+    const oilInfo = {
+    "Afghanistan": "Afghanistan has minor oil reserves, but its production is negligible due to ongoing conflict and lack of infrastructure.",
+    "Albania": "Albania has small-scale oil production, primarily from onshore fields.",
+    "Algeria": "Algeria is a notable oil producer in North Africa, with a focus on both oil and natural gas exports.",
+    "Andorra": "Andorra has no significant oil production or reserves and relies entirely on imports for its energy needs.",
+    "Angola": "Angola is a leading oil producer in Africa, with most production coming from offshore fields.",
+    "Antigua and Barbuda": "Antigua and Barbuda has no oil production and relies on imports for energy.",
+    "Argentina": "Argentina has significant shale oil reserves and is a growing producer, especially in the Vaca Muerta region.",
+    "Armenia": "Armenia has no significant oil production or reserves and relies on imports for its energy needs.",
+    "Australia": "Australia's oil production is relatively small but is complemented by significant natural gas exports.",
+    "Austria": "Austria has limited oil production and relies heavily on imports to meet its energy needs.",
+    "Azerbaijan": "Azerbaijan is a significant oil producer in the Caspian Sea region, with oil exports forming a major part of its economy.",
+    "Bahamas": "The Bahamas has no significant oil production or reserves, relying on imports.",
+    "Bahrain": "Bahrain produces oil primarily from onshore fields and relies on imports to supplement its domestic needs.",
+    "Bangladesh": "Bangladesh has no significant oil production, relying on imports for its energy needs.",
+    "Barbados": "Barbados has minimal oil production and relies primarily on imports for energy.",
+    "Belarus": "Belarus has no significant oil production but is a key transit country for Russian oil exports to Europe.",
+    "Belgium": "Belgium has no oil production and is a key importer of crude oil for its refining industry.",
+    "Belize": "Belize has small-scale oil production from onshore fields.",
+    "Benin": "Benin has no significant oil production and relies on imports for its energy needs.",
+    "Bhutan": "Bhutan has no oil production and relies entirely on imports for its energy requirements.",
+    "Bolivia": "Bolivia focuses primarily on natural gas production, with little emphasis on oil.",
+    "Bosnia and Herzegovina": "Bosnia and Herzegovina has no significant oil production and relies on imports for energy.",
+    "Botswana": "Botswana has no significant oil production or reserves, relying on imports.",
+    "Brazil": "Brazil's offshore oil production has been growing rapidly in recent years, particularly from the pre-salt layer.",
+    "Brunei": "Brunei is a significant oil and gas producer in Southeast Asia, with exports forming the backbone of its economy.",
+    "Bulgaria": "Bulgaria has limited oil production and relies on imports for most of its needs.",
+    "Burkina Faso": "Burkina Faso has no significant oil production and relies entirely on imports.",
+    "Burundi": "Burundi has no oil reserves or production and relies on imports for energy.",
+    "Cabo Verde": "Cabo Verde has no oil production and is entirely dependent on imports for energy.",
+    "Cambodia": "Cambodia has limited oil production potential, primarily offshore, but lacks major commercial development.",
+    "Cameroon": "Cameroon is a modest oil producer, with most production coming from offshore fields.",
+    "Canada": "Canada is known for its vast oil sands reserves, contributing significantly to global oil supply.",
+    "Central African Republic": "The Central African Republic has no significant oil production but may have unexplored reserves.",
+    "Chad": "Chad is an oil producer in Central Africa, with exports forming a major part of its economy.",
+    "Chile": "Chile has no significant oil production and relies heavily on imports.",
+    "China": "China is a major oil consumer and producer, with significant domestic production focused on onshore and offshore fields.",
+    "Colombia": "Colombia is a notable oil producer in South America, exporting primarily to the US and Asia.",
+    "Comoros": "Comoros has no oil production and relies on imports for its energy needs.",
+    "Congo (Congo-Brazzaville)": "The Republic of Congo is a significant oil producer in Central Africa, with exports forming the backbone of its economy.",
+    "Congo (Congo-Kinshasa)": "The Democratic Republic of Congo has limited oil production and exports primarily from its western region.",
+    "Costa Rica": "Costa Rica has no oil production and focuses on renewable energy.",
+    "Croatia": "Croatia has small-scale oil production, primarily from onshore fields.",
+    "Cuba": "Cuba has limited oil production and relies on imports, primarily from Venezuela.",
+    "Cyprus": "Cyprus has no significant oil production but is exploring offshore reserves.",
+    "Czech Republic": "The Czech Republic has minimal oil production and relies heavily on imports.",
+    "Denmark": "Denmark produces oil from the North Sea, though production has been declining.",
+    "Djibouti": "Djibouti has no significant oil production and relies on imports for energy.",
+    "Dominica": "Dominica has no oil production and relies entirely on imports.",
+    "Dominican Republic": "The Dominican Republic has no significant oil production and is reliant on imports.",
+    "Ecuador": "Ecuador, an OPEC member, is a smaller producer with its economy heavily reliant on oil exports.",
+    "Egypt": "Egypt's oil production is focused on the Gulf of Suez and the Western Desert, with growing offshore activities.",
+    "El Salvador": "El Salvador has no significant oil production and relies on imports.",
+    "Equatorial Guinea": "Equatorial Guinea is a significant oil producer in Central Africa, with most production coming from offshore fields.",
+    "Eritrea": "Eritrea has no significant oil production but may have unexplored reserves.",
+    "Estonia": "Estonia has no significant oil production and relies on imports for energy needs.",
+    "Eswatini (Swaziland)": "Eswatini has no oil production and relies on imports for energy.",
+    "Ethiopia": "Ethiopia has no significant oil production but is exploring potential reserves.",
+    "Fiji": "Fiji has no oil production and relies on imports for energy.",
+    "Finland": "Finland has no oil production and relies heavily on imports.",
+    "France": "France has limited oil production and relies on imports for most of its energy needs.",
+    "Gabon": "Gabon is a notable oil producer in Central Africa, with exports forming a significant part of its economy.",
+    "Gambia": "The Gambia has no oil production but is exploring offshore reserves.",
+    "Georgia": "Georgia has no significant oil production and is a transit country for oil pipelines.",
+    "Germany": "Germany has limited oil production and is a major importer of crude oil.",
+    "Ghana": "Ghana is a growing oil producer, with offshore fields forming the basis of its industry.",
+    "Greece": "Greece has limited oil production and relies on imports for its energy needs.",
+    "Grenada": "Grenada has no oil production and relies on imports for energy.",
+    "Guatemala": "Guatemala has small-scale oil production, primarily for domestic use.",
+    "Guinea": "Guinea has no significant oil production but may have unexplored offshore reserves.",
+    "Guinea-Bissau": "Guinea-Bissau has no significant oil production and relies on imports.",
+    "Guyana": "Guyana is an emerging oil producer, with significant offshore discoveries in recent years.",
+    "Haiti": "Haiti has no significant oil production and relies on imports.",
+    "Honduras": "Honduras has no oil production and relies on imports for its energy needs.",
+    "Hungary": "Hungary has limited oil production and relies heavily on imports.",
+    "Iceland": "Iceland has no oil production and relies on renewable energy for most of its needs.",
+    "India": "India has moderate oil production but relies heavily on imports to meet its large domestic demand.",
+    "Indonesia": "Indonesia is a former OPEC member with declining production but remains a significant player in Southeast Asia.",
+    "Iran": "Iran has significant oil reserves and is a key OPEC member, although sanctions have impacted its export capacity.",
+    "Iraq": "Iraq has substantial oil reserves and is a leading OPEC producer, contributing significantly to global supply.",
+    "Ireland": "Ireland has no significant oil production and relies on imports.",
+    "Israel": "Israel has minimal oil production and relies on imports, though it has significant natural gas reserves.",
+    "Italy": "Italy has limited oil production and relies heavily on imports for its energy needs.",
+    "Ivory Coast": "The Ivory Coast is a modest oil producer, with offshore fields contributing to its economy.",
+    "Jamaica": "Jamaica has no significant oil production and relies on imports.",
+    "Japan": "Japan has no oil production and is a major importer of crude oil and refined products.",
+    "Jordan": "Jordan has no significant oil production and relies on imports.",
+    "Kazakhstan": "Kazakhstan is a major oil producer in Central Asia, with significant reserves in the Caspian Sea region.",
+    "Kenya": "Kenya has discovered oil reserves but is not yet a major producer.",
+    "Kiribati": "Kiribati has no oil production and relies on imports for energy.",
+    "Kuwait": "Kuwait is one of the world's top oil producers, with oil exports forming the backbone of its economy.",
+    "Kyrgyzstan": "Kyrgyzstan has minimal oil production and relies on imports.",
+    "Laos": "Laos has no significant oil production and relies on imports.",
+    "Latvia": "Latvia has no significant oil production and relies on imports.",
+    "Lebanon": "Lebanon has no significant oil production but is exploring offshore reserves.",
+    "Lesotho": "Lesotho has no oil production and relies on imports.",
+    "Liberia": "Liberia has no significant oil production but is exploring offshore reserves.",
+    "Libya": "Libya has substantial oil reserves, but its production has been affected by political instability.",
+    "Liechtenstein": "Liechtenstein has no oil production and relies on imports.",
+    "Lithuania": "Lithuania has no significant oil production and relies on imports.",
+    "Luxembourg": "Luxembourg has no oil production and relies on imports.",
+    "Madagascar": "Madagascar has small-scale oil exploration efforts but no significant production.",
+    "Malawi": "Malawi has no oil production and relies on imports.",
+    "Malaysia": "Malaysia's oil industry includes offshore production, making it a key regional producer.",
+    "Maldives": "The Maldives has no oil production and relies on imports.",
+    "Mali": "Mali has no significant oil production and relies on imports.",
+    "Malta": "Malta has no oil production and relies on imports.",
+    "Marshall Islands": "The Marshall Islands has no oil production and relies on imports.",
+    "Mauritania": "Mauritania has offshore oil production, though it is relatively small-scale.",
+    "Mauritius": "Mauritius has no oil production and relies on imports.",
+    "Mexico": "Mexico's oil industry is state-run, with offshore fields in the Gulf of Mexico being a major focus.",
+    "Micronesia": "Micronesia has no oil production and relies on imports.",
+    "Moldova": "Moldova has no significant oil production and relies on imports.",
+    "Monaco": "Monaco has no oil production and relies on imports.",
+    "Mongolia": "Mongolia has small-scale oil production, primarily for export to China.",
+    "Montenegro": "Montenegro has no significant oil production and relies on imports.",
+    "Morocco": "Morocco has no significant oil production and relies on imports.",
+    "Mozambique": "Mozambique focuses on natural gas production rather than oil.",
+    "Myanmar (Burma)": "Myanmar has small-scale oil production, primarily from onshore fields.",
+    "Namibia": "Namibia is exploring offshore oil reserves but has no significant production.",
+    "Nauru": "Nauru has no oil production and relies on imports.",
+    "Nepal": "Nepal has no significant oil production and relies on imports.",
+    "Netherlands": "The Netherlands has limited oil production and is more focused on natural gas.",
+    "New Zealand": "New Zealand has small-scale oil production, primarily from offshore fields.",
+    "Nicaragua": "Nicaragua has no significant oil production and relies on imports.",
+    "Niger": "Niger is a small oil producer, primarily for export.",
+    "Nigeria": "Nigeria is Africa's largest oil producer, heavily reliant on oil exports for its economy.",
+    "North Korea": "North Korea has no significant oil production and relies on imports, though it faces sanctions.",
+    "North Macedonia": "North Macedonia has no significant oil production and relies on imports.",
+    "Norway": "Norway is a key exporter of oil and gas, with most of its production coming from the North Sea.",
+    "Oman": "Oman is a significant oil producer in the Middle East, relying heavily on enhanced recovery techniques.",
+    "Pakistan": "Pakistan has small-scale oil production and relies heavily on imports.",
+    "Palau": "Palau has no oil production and relies on imports.",
+    "Panama": "Panama has no significant oil production and is a major transit country for oil shipping through the Panama Canal.",
+    "Papua New Guinea": "Papua New Guinea has small-scale oil production but is more focused on natural gas.",
+    "Paraguay": "Paraguay has no significant oil production and relies on imports.",
+    "Peru": "Peru has small-scale oil production, primarily from onshore fields in the Amazon region.",
+    "Philippines": "The Philippines has minimal oil production and relies heavily on imports.",
+    "Poland": "Poland has limited oil production and relies on imports, particularly from Russia.",
+    "Portugal": "Portugal has no significant oil production and relies on imports.",
+    "Qatar": "Qatar focuses more on natural gas but also has significant oil production and exports.",
+    "Romania": "Romania has moderate oil production, primarily from onshore fields.",
+    "Russia": "Russia is a major global player in oil production and export, especially to Europe and Asia.",
+    "Rwanda": "Rwanda has no oil production and relies on imports.",
+    "Saint Kitts and Nevis": "Saint Kitts and Nevis has no oil production and relies on imports.",
+    "Saint Lucia": "Saint Lucia has no oil production and relies on imports.",
+    "Saint Vincent and the Grenadines": "Saint Vincent and the Grenadines has no oil production and relies on imports.",
+    "Samoa": "Samoa has no oil production and relies on imports.",
+    "San Marino": "San Marino has no oil production and relies on imports.",
+    "Sao Tome and Principe": "Sao Tome and Principe is exploring offshore oil reserves but has no significant production.",
+    "Saudi Arabia": "Saudi Arabia holds vast reserves of crude oil and is a leading member of OPEC.",
+    "Senegal": "Senegal is exploring offshore oil reserves but has limited production currently.",
+    "Serbia": "Serbia has limited oil production and relies on imports.",
+    "Seychelles": "The Seychelles is exploring offshore oil reserves but has no production.",
+    "Sierra Leone": "Sierra Leone has no significant oil production and relies on imports.",
+    "Singapore": "Singapore has no oil production but is a major refining and trading hub.",
+    "Slovakia": "Slovakia has no significant oil production and relies on imports.",
+    "Slovenia": "Slovenia has no oil production and relies on imports.",
+    "Solomon Islands": "The Solomon Islands has no oil production and relies on imports.",
+    "Somalia": "Somalia has no significant oil production but is believed to have unexplored offshore reserves.",
+    "South Africa": "South Africa has limited oil production and relies heavily on imports.",
+    "South Korea": "South Korea has no oil production and is a major importer of crude oil.",
+    "South Sudan": "South Sudan's economy is heavily dependent on oil, with most production exported through Sudan.",
+    "Spain": "Spain has no significant oil production and relies on imports.",
+    "Sri Lanka": "Sri Lanka has no oil production and relies heavily on imports.",
+    "Sudan": "Sudan has notable oil production, though its industry has faced challenges due to conflict and sanctions.",
+    "Suriname": "Suriname is an emerging oil producer with recent offshore discoveries.",
+    "Sweden": "Sweden has no oil production and relies on imports.",
+    "Switzerland": "Switzerland has no oil production and relies on imports.",
+    "Syria": "Syria has significant oil reserves, but its production has been severely impacted by conflict.",
+    "Tajikistan": "Tajikistan has minimal oil production and relies on imports.",
+    "Tanzania": "Tanzania has no significant oil production but is exploring potential reserves.",
+    "Thailand": "Thailand has moderate oil production, primarily from offshore fields.",
+    "Timor-Leste": "Timor-Leste is a small oil producer, with offshore fields contributing to its economy.",
+    "Togo": "Togo has no oil production and relies on imports.",
+    "Tonga": "Tonga has no oil production and relies on imports.",
+    "Trinidad and Tobago": "Trinidad and Tobago is a notable oil producer in the Caribbean, though its focus is shifting to natural gas.",
+    "Tunisia": "Tunisia has limited oil production and relies on imports.",
+    "Turkey": "Turkey has minimal oil production and relies heavily on imports.",
+    "Turkmenistan": "Turkmenistan focuses primarily on natural gas production, with minimal oil output.",
+    "Tuvalu": "Tuvalu has no oil production and relies on imports.",
+    "Uganda": "Uganda is developing its oil sector, with recent discoveries but no significant production yet.",
+    "Ukraine": "Ukraine has limited oil production and relies heavily on imports.",
+    "United Arab Emirates": "The UAE is a major oil exporter, with Abu Dhabi holding most of its reserves.",
+    "United Kingdom": "The UK produces oil primarily from the North Sea, though production has declined in recent years.",
+    "United States": "The US is one of the largest oil producers in the world, leading in both production and exports.",
+    "Uruguay": "Uruguay has no significant oil production and relies on imports.",
+    "Uzbekistan": "Uzbekistan has minimal oil production and focuses primarily on natural gas.",
+    "Vanuatu": "Vanuatu has no oil production and relies on imports.",
+    "Vatican City": "Vatican City has no oil production and relies entirely on external energy sources.",
+    "Venezuela": "Venezuela holds the largest proven oil reserves globally but faces challenges in production and infrastructure.",
+    "Vietnam": "Vietnam is a notable oil producer in Southeast Asia, with production focused on offshore fields.",
+    "Yemen": "Yemen has oil reserves, but production has been disrupted by ongoing conflict.",
+    "Zambia": "Zambia has no oil production and relies on imports.",
+    "Zimbabwe": "Zimbabwe has no significant oil production and relies on imports."
+};
+
+    // Initialize the map
+    const map = L.map('map').setView([20, 0], 2);
+
+    // Add a tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Add a geocoder control for searching locations
+    L.Control.geocoder().addTo(map);
+
+    // Global variable for GeoJSON layer
+    let geojson;
+
+    // Highlight feature on hover
+    function highlightFeature(e) {
+      const layer = e.target;
+      layer.setStyle({
+        weight: 3,
+        color: '#666',
+        fillOpacity: 0.7,
+      });
+
+      if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+        layer.bringToFront();
+      }
+    }
+
+    // Reset feature style on mouse out
+    function resetHighlight(e) {
+      geojson.resetStyle(e.target);
+    }
+
+    // Load GeoJSON data
+    fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
+      .then(response => response.json())
+      .then(data => {
+        // Initialize the GeoJSON layer
+        geojson = L.geoJSON(data, {
+          style: {
+            color: '#3388ff',
+            weight: 1,
+            fillOpacity: 0.2,
+          },
+          onEachFeature: (feature, layer) => {
+            const countryName = feature.properties.name;
+            const info = oilInfo[countryName] || "Oil industry information is currently unavailable for this country.";
+
+            // Bind popup
+            layer.bindPopup(`
+              <strong>${countryName}</strong><br>
+              <p>${info}</p>
+              <a href="https://en.wikipedia.org/wiki/Oil_industry_in_${countryName.replace(/ /g, '_')}" 
+                 target="_blank">Learn more about the oil industry</a>
+            `);
+
+            // Add hover and click events
+            layer.on({
+              mouseover: highlightFeature,
+              mouseout: resetHighlight,
+              click: () => layer.openPopup(),
+            });
+          }
+        }).addTo(map);
+
+        // Add a legend to the map
+        const legend = L.control({ position: 'bottomright' });
+        legend.onAdd = function () {
+          const div = L.DomUtil.create('div', 'info legend');
+          div.innerHTML = `
+            <i style="background: #3388ff;"></i> Countries with data<br>
+            <i style="background: #f03;"></i> Countries without data
+          `;
+          return div;
+        };
+        legend.addTo(map);
+      })
+      .catch(error => {
+        alert('Failed to load map data. Please try again later.');
+        console.error('Error loading GeoJSON:', error);
+      });
+  </script>
+</body>
+</html>
